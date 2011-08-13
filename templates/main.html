@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="{{ STATIC_URL }}normalize.css"/>
+		<link rel="stylesheet" href="{{ STATIC_URL }}barabas.css"/>
+	</head>
+	<body>
+		<header>
+			<h1>Barabas Sync</h1>
+		</header>
+		<nav>
+			<ol>
+				{% if user %}
+					<li><a href="/users/logout/">Logout</a></li>
+					<li><a href="/users/profile/">Your Profile ({{ user.firstName }}) - Not working</a></li>
+				{% else %}
+					<li><a href="/users/">Inloggen</a></li>
+					<li><a href="/users/">Registreren</a></li>
+				{% endif %}
+			</ol>
+		</nav>
+	
+		<section id="mainsection">
+			{% block content %} This page is intentionnaly left blank {% endblock %}
+		</section>
+	</body>
+</html>
