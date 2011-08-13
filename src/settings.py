@@ -68,6 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'barabasdjango.users.middleware.AuthenticationMiddleware',
+    'barabasdjango.middleware.BarabasSessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -96,6 +97,8 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0
 
 import os.path
 STATICFILES_DIRS = [os.path.abspath('static/')]

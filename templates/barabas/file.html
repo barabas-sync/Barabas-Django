@@ -9,7 +9,7 @@
 	
 	<ol>
 	{% for version in versions %}
-		<li>{{ version.timeEdited }} <a href="/fst/files/{{ file.ID }}/{{ version.ID }}/download/">(Download)</a></li>
+		<li>{{ version.timeEdited }} <a href="/files/{{ file.ID }}/{{ version.ID }}/download/">(Download)</a></li>
 	{% endfor %}
 	</ol>
 	
@@ -20,7 +20,7 @@
 		
 		{{ uploadVersionForm.as_p }}
 		
-		<input type="submit" label="Upload new version" />
+		<input type="submit" value="Upload new version" />
 	</form>
 	
 	<h2>Tags</h2>
@@ -32,6 +32,6 @@
 		
 		{{ tagFileForm.as_p }}
 		
-		<input type="submit" label="Tag file" />
+		<input type="submit" value="Tag file" />
 	</form>
 {% endblock %}

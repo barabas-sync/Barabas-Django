@@ -16,22 +16,17 @@ class UploadedFileWrapper:
     def __init__(self, upload):
         """Empty docstring"""
         self.__upload = upload
-        self.__currentChunk = 0
-        self.__chunks = self.__upload.chunks()
-        self.__buffer = None
+        self.__temp = open(self.__upload.temporary_file_path())
+    
+    def seek(self, offset):
+    	return self.__temp.seek(offset)
+    
+    def tell(self):
+    	return self.__temp.tell()
     
     def read(self, length = None):
         """Empty docstring"""
-        if (length == None):
-            return self.__upload.read()
-        else:
-            if (self.__buffer == None):
-                self.__buffer = self.__upload.read()
-            
-            chunk = self.__buffer[:length]
-            self.__buffer = self.__buffer[length:] 
-            
-            return chunk
+        return self.__temp.read(length)
 
 def index(request):
     if request.user:
@@ -84,7 +79,7 @@ def tag(request, fileID):
         tagForm = forms.TagFileForm(request.POST)
         
         if (tagForm.is_valid()):
-            database = webserver.WebServer.database()
+            database = WebServer.database()
             
             syncedFile = database.find(SyncedFile, SyncedFile.ID == int(fileID)).one()
             if (syncedFile.owner != request.user):
@@ -92,7 +87,7 @@ def tag(request, fileID):
             
             syncedFile.tag(tagForm.cleaned_data['tagName'])
             database.commit()
-            return HttpResponseRedirect('/barabas/files/' + str(syncedFile.ID) + '/')
+            return HttpResponseRedirect('/files/' + str(syncedFile.ID) + '/')
 
 @LoginRequired
 def uploadVersion(request, fileID):
@@ -109,10 +104,13 @@ def uploadVersion(request, fileID):
                 return HttpResponseRedirect('/')
             
             uploadedFile = uploadVersionForm.cleaned_data['syncedFile']
-            version = storage.create(UploadedFileWrapper(uploadedFile), datetime.datetime.now())
-            syncedFile.versions.add(version)
+            version = SyncedFileVersion(UploadedFileWrapper(uploadedFile),
+                                        u'Version from %s (from web)' % datetime.datetime.now(WebServer.timezone()).strftime('%Y-%m-%d %H:%M'),
+                                        unicode(datetime.datetime.now(WebServer.timezone()).strftime('%Y-%m-%dT%H:%M:%S%z')),
+                                        storage)
+            syncedFile.add_version(version)
             database.commit()
-            return HttpResponseRedirect('/barabas/files/' + str(syncedFile.ID) + '/')
+            return HttpResponseRedirect('/files/' + str(syncedFile.ID) + '/')
 
 @LoginRequired
 def createFile(request):    
@@ -124,17 +122,17 @@ def createFile(request):
                         
             uploadedFile = createFileForm.cleaned_data['syncedFile']
             sf = SyncedFile(uploadedFile.name, request.user)
+            sf.mimetype = unicode(uploadedFile.content_type)
             database.add(sf)
             
             version = SyncedFileVersion(UploadedFileWrapper(uploadedFile),
-                                        u'Testname',
-                                        datetime.datetime.now(),
+                                        u'Initial Version (from web)',
+                                        unicode(datetime.datetime.now(WebServer.timezone()).strftime('%Y-%m-%dT%H:%M:%S%z')),
                                         storage)
-            sf.versions.add(version)
-            database.flush()
+            sf.add_version(version)
             database.commit()
             
-            return HttpResponseRedirect('/barabas/files/' + str(sf.ID) + '/')
+            return HttpResponseRedirect('/files/' + str(sf.ID) + '/')
         else:
             return render_to_response('barabas/createFile.html', { 'createFileForm': createFileForm },
                                       context_instance=RequestContext(request))
@@ -144,12 +142,11 @@ def download(request, fileID, versionID):
     storage = WebServer.storage()
     database = WebServer.database()
     
-    version = database.find(FileVersion, FileVersion.ID == int(versionID)).one()
+    version = database.find(SyncedFileVersion, SyncedFileVersion.ID == int(versionID)).one()
     if (version.syncedfile.owner != request.user):
         return HttpResponseRedirect('/')
     filed = version.open(storage)
     
-    resp = HttpResponse(filed.read(), mimetype='application/octet-stream')
-    filed.close()
+    resp = HttpResponse(filed, mimetype=version.syncedfile.mimetype)
     resp['Content-Disposition'] = 'attachment; filename='+version.syncedfile.fileName
     return resp

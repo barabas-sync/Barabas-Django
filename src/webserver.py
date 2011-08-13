@@ -1,4 +1,16 @@
+import datetime
+
 import barabas.config
+
+class Timezone(datetime.tzinfo):
+	def utcoffset(self, dt):
+		return datetime.timedelta(hours=2)
+	
+	def dst(self, dt):
+		return datetime.timedelta(hours=0)
+	
+	def tzname(self, dt):
+		return None
 
 class WebServer:
 	__storage = None
@@ -19,11 +31,25 @@ class WebServer:
 			config = cls.config()
 			cls.__store = barabas.config.load_database(cls.__config).new_store()
 		return cls.__store
+	
+	@classmethod
+	def open_store(cls):
+		"""Returns a database store instance"""
+		return cls.database()
+	
+	@classmethod
+	def close_store(cls):
+		"""Closes the store instance"""
+		cls.__store = None
 
 	@classmethod
 	def storage(cls):
 		"""Returns an instance of the storage module"""
 		if (cls.__storage == None):
 			config = cls.config()
-			cls.__storage = bararbas.config.load_storage(cls.__config)
+			cls.__storage = barabas.config.load_storage_manager(cls.__config)
 		return cls.__storage
+	
+	@classmethod
+	def timezone(cls):
+		return Timezone()
