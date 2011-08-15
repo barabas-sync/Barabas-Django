@@ -40,7 +40,8 @@ class WebServer:
 	@classmethod
 	def close_store(cls):
 		"""Closes the store instance"""
-		cls.__store = None
+		if (cls.__store != None):
+			cls.__store.commit()
 
 	@classmethod
 	def storage(cls):
