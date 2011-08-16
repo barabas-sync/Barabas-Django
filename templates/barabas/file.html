@@ -9,7 +9,7 @@
 	
 	<ol>
 	{% for version in versions %}
-		<li>{{ version.timeEdited }} <a href="/files/{{ file.ID }}/{{ version.ID }}/download/">(Download)</a></li>
+		<li>{{ version.name }} <a href="/files/{{ file.ID }}/{{ version.ID }}/download/">(Download)</a></li>
 	{% endfor %}
 	</ol>
 	
