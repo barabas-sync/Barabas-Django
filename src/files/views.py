@@ -123,7 +123,7 @@ def createFile(request):
             uploadedFile = createFileForm.cleaned_data['syncedFile']
             sf = SyncedFile(uploadedFile.name, request.user)
             sf.mimetype = unicode(uploadedFile.content_type)
-            database.add(sf)
+            sf.add_to_store(database)
             
             version = SyncedFileVersion(UploadedFileWrapper(uploadedFile),
                                         u'Initial Version (from web)',

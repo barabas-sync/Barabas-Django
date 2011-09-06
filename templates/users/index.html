@@ -11,12 +11,4 @@
 		
 		<input type="submit" value="Login" />
 	</form>
-	
-	<h2>Sign Up Form</h2>
-	<form action="/users/signup/" method="POST">
-		{% csrf_token %}
-		{{ registrationForm.as_p }}
-		
-		<input type="submit" value="Sign Up" />
-	</form>
 {% endblock %}

@@ -5,8 +5,10 @@ from barabas.identity.user import User
 from barabas.identity.passwordauthentication import PasswordAuthentication
 
 class PasswordLoginForm(forms.Form):
-    username = forms.CharField(max_length = 32, label = "Username")
-    password = forms.CharField(widget=forms.PasswordInput, label = "Password")
+    username = forms.CharField(max_length=32, label="Test",
+                               widget=forms.TextInput(attrs={'placeholder': 'John.Doe'}))
+    password = forms.CharField(label="Password",
+                               widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
     
     def clean(self):
         """Empty docstring"""
@@ -21,13 +23,19 @@ class PasswordLoginForm(forms.Form):
         return data
 
 class PasswordBasedRegistrationForm(forms.Form):
-    username = forms.CharField(max_length = 32, label = "Username")
-    email = forms.CharField(label = "E-mail")
-    firstName = forms.CharField(label = "First Name")
-    lastName = forms.CharField(label = "Last Name")
+    username = forms.CharField(max_length=32, label="Username",
+                               widget=forms.TextInput(attrs={'placeholder': 'John.Doe'}))
+    email = forms.CharField(label="E-mail",
+                            widget=forms.TextInput(attrs={'placeholder': 'john.doe@example.com'}))
+    firstName = forms.CharField(label="First Name",
+                                widget=forms.TextInput(attrs={'placeholder': 'John'}))
+    lastName = forms.CharField(label="Last Name",
+                               widget=forms.TextInput(attrs={'placeholder': 'Doe'}))
     
-    password = forms.CharField(widget = forms.PasswordInput, label = "Password")
-    passwordCheck = forms.CharField(widget = forms.PasswordInput, label = "Password (check)")
+    password = forms.CharField(label="Password",
+                               widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    passwordCheck = forms.CharField(label="Password (check)",
+                                    widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
     
     def clean(self):
         """Empty docstring"""

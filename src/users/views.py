@@ -15,12 +15,10 @@ def index(request):
             return     HttpResponseRedirect('/')
     else:
         loginForm = PasswordLoginForm()
-    registrationForm = PasswordBasedRegistrationForm()
         
     return render_to_response('users/index.html',
                               {
                                'loginForm' : loginForm,
-                               'registrationForm': registrationForm
                               },
                               context_instance=RequestContext(request))
 
